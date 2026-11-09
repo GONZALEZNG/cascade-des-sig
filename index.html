@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>La cascade des soldes</title>
+<style>
+:root{--bg:#f6f4ff;--card:#fff;--tx:#1f1b3a;--mut:#6b6788;--pri:#6c3df4;--pri2:#ff5d8f;--ok:#12a36b;--okbg:#e3f8ef;--ko:#e5383b;--line:#d9d4f2;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15122b;--card:#211d40;--tx:#f0eeff;--mut:#a9a4d0;--pri:#9b7bff;--pri2:#ff7aa5;--ok:#3ddc97;--okbg:#12382c;--ko:#ff6b6e;--line:#3a3566}}
+:root[data-theme="dark"]{--bg:#15122b;--card:#211d40;--tx:#f0eeff;--mut:#a9a4d0;--pri:#9b7bff;--pri2:#ff7aa5;--ok:#3ddc97;--okbg:#12382c;--ko:#ff6b6e;--line:#3a3566}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:620px;margin:0 auto;padding:12px}
+h1{font-size:1.5rem;margin:.2em 0}
+h3{margin:2px 0;font-size:1.05rem}
+.hero{text-align:center;padding:24px 8px}
+.btn{background:linear-gradient(135deg,var(--pri),var(--pri2));color:#fff;border:0;border-radius:14px;padding:14px 26px;font-size:1.1rem;font-weight:700;cursor:pointer;margin:8px 0}
+.box{background:var(--card);border:2px solid var(--line);border-radius:14px;padding:12px;margin:12px 0;text-align:left}
+.hud{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding:8px 0}
+.stats{display:flex;justify-content:space-between;gap:8px;font-weight:700;margin-bottom:6px;font-size:.9rem}
+#chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{background:var(--card);border:2px solid var(--pri);color:var(--tx);border-radius:12px;padding:8px 10px;font-weight:700;font-size:.9rem;cursor:pointer}
+.chip.sel{background:var(--pri);color:#fff}
+#info{margin-top:6px;font-size:.88rem;color:var(--mut);min-height:38px}
+.shake{animation:sh .35s;border-color:var(--ko)!important}
+@keyframes sh{25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+.step{background:var(--card);border:2px dashed var(--line);border-radius:14px;padding:10px;margin:8px 0;cursor:pointer}
+.step b.n{display:inline-block;background:var(--line);color:var(--tx);border-radius:8px;padding:1px 8px;font-size:.8rem;margin-bottom:4px}
+.step p{margin:3px 0;font-size:.9rem}
+.step.f{border:2px solid var(--ok);background:var(--okbg);cursor:default}
+.step.f b.n{background:var(--ok);color:#fff}
+.arrow{text-align:center;color:var(--pri);font-weight:800;line-height:1}
+.ex{font-weight:700}
+.opt{display:block;width:100%;text-align:left;background:var(--card);color:var(--tx);border:2px solid var(--line);border-radius:12px;padding:12px;margin:8px 0;font-size:.95rem;cursor:pointer}
+.opt.bad{border-color:var(--ko);opacity:.55}
+.opt.good{border-color:var(--ok);background:var(--okbg)}
+.hide{display:none}
+.score{font-size:2.4rem;font-weight:800;color:var(--pri);margin:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+<section id="home" class="hero">
+<h1>🪜 La cascade des soldes</h1>
+<p>4 manches pour maîtriser CA, marge, VA, EBE, résultat d’exploitation, résultat net, BFR, CAF et productivité.</p>
+<div class="box">
+<p><b>Les 4 manches</b></p>
+<p>1. 🪜 <b>Cascade</b> : remets les 6 soldes dans l’ordre.<br>2. 📖 <b>Définitions</b> : retrouve la notion.<br>3. 🧮 <b>Formules</b> : évite les pièges.<br>4. 💼 <b>Cas pratiques</b> : BFR, CAF, productivité.</p>
+<p>Bonne réponse : des points · erreur : des points en moins.</p>
+<p>⏱ Tu as <b>7 minutes</b> pour tout faire. Fini en avance : bonus de temps !</p>
+</div>
+<button class="btn" id="go">C’est parti !</button>
+</section>
+
+<section id="game" class="hide">
+<div class="hud">
+<div class="stats"><span id="rd"></span><span id="tm">⏱ 7:00</span><span id="sc">⭐ 0</span></div>
+<div id="chips"></div>
+<div id="info"></div>
+</div>
+<div id="steps"></div>
+<div style="text-align:center"><button class="btn hide" id="next"></button></div>
+</section>
+
+<section id="end" class="hide hero">
+<h1 id="et">🎉 Bravo, tu maîtrises la cascade !</h1>
+<p class="score" id="es"></p>
+<p id="em"></p>
+<div class="box"><p>🧠 <b>À retenir</b></p>
+<p>CA → Marge commerciale → VA → EBE → Résultat d’exploitation → Résultat net : à chaque étape, on retire un nouveau type de charges.</p>
+<p><b>BFR</b> = stocks + créances clients − dettes fournisseurs<br><b>CAF</b> = résultat net + dotations aux amortissements<br><b>Productivité</b> = production ÷ moyens utilisés</p></div>
+<button class="btn" id="again">Rejouer 🔁</button>
+</section>
+</div>
+
+<script>
+var S=[
+{n:"Chiffre d’affaires",d:"Total des ventes de biens et de services réalisées sur un exercice.",c:"Point de départ : tout ce que l’entreprise a vendu.",f:"Prix de vente × quantités vendues",e:"Ex : 100 000 €",x:["Prix d’achat × quantités achetées","Ventes − coût d’achat des marchandises vendues","VA + charges de personnel"]},
+{n:"Marge commerciale",d:"Gain réalisé sur la revente de marchandises, une fois celles-ci payées.",c:"On retire le coût d’achat des marchandises vendues.",f:"Ventes de marchandises − coût d’achat des marchandises vendues",e:"Ex : 100 000 − 60 000 = 40 000 €",x:["Ventes de marchandises − consommations externes","Chiffre d’affaires − charges de personnel","Coût d’achat des marchandises − ventes de marchandises"]},
+{n:"Valeur ajoutée",d:"Valeur que l’entreprise crée elle-même en transformant ou en revendant ce qu’elle achète à des tiers.",c:"On retire les consommations externes (loyer, énergie, sous-traitance…).",f:"Marge commerciale (ou production) − consommations externes",e:"Ex : 40 000 − 15 000 = 25 000 €",x:["Marge commerciale − charges de personnel","Marge commerciale + impôts et taxes","Chiffre d’affaires − charges de personnel"]},
+{n:"EBE",d:"Ce que rapporte l’activité courante avant amortissements, frais financiers et impôt.",c:"On retire les impôts et taxes et les charges de personnel.",f:"VA − impôts et taxes − charges de personnel",e:"Ex : 25 000 − 1 000 − 16 000 = 8 000 €",x:["VA − consommations externes","VA − amortissements − frais financiers","VA − charges de personnel"]},
+{n:"Résultat d’exploitation",d:"Performance de l’activité courante après prise en compte de l’usure du matériel (amortissements).",c:"On retire les dotations aux amortissements.",f:"EBE − dotations aux amortissements",e:"Ex : 8 000 − 3 000 = 5 000 €",x:["EBE − charges de personnel","EBE + dotations aux amortissements","VA − dotations aux amortissements"]},
+{n:"Résultat net",d:"Ce qui reste, en bénéfice ou en perte, une fois toutes les charges et l’impôt payés.",c:"On retire les frais financiers et l’impôt sur les bénéfices.",f:"Résultat d’exploitation − frais financiers − impôt sur les bénéfices (version simplifiée)",e:"Ex : 5 000 − 1 000 − 1 000 = 3 000 €",x:["EBE − frais financiers − impôt sur les bénéfices","Résultat d’exploitation + impôt sur les bénéfices","VA − impôt sur les bénéfices"]}
+];
+var M4=[
+{q:"Tes clients paient à 60 jours, mais tu paies tes fournisseurs à 30 jours. Quel indicateur augmente ?",a:"Le BFR",x:["La CAF","La productivité","Le chiffre d’affaires"],e:"Le décalage de trésorerie crée un besoin de financement : le BFR."},
+{q:"Une entreprise veut savoir combien elle produit par heure de travail. Quel indicateur utiliser ?",a:"La productivité",x:["Le BFR","La CAF","La marge commerciale"],e:"Productivité = production ÷ moyens utilisés."},
+{q:"Une entreprise veut savoir si elle peut financer seule un investissement et rembourser son emprunt. Quel indicateur regarder ?",a:"La CAF",x:["Le BFR","La productivité","Le chiffre d’affaires"],e:"La CAF mesure les ressources dégagées par l’activité."},
+{q:"Stocks 30 000 € · Créances clients 20 000 € · Dettes fournisseurs 25 000 €. Quel est le BFR ?",a:"25 000 €",x:["75 000 €","15 000 €","50 000 €"],e:"30 000 + 20 000 − 25 000 = 25 000 €"},
+{q:"Pour calculer la CAF, on ajoute les dotations aux amortissements au résultat net. Pourquoi ?",a:"Car c’est une charge calculée : elle a réduit le résultat sans sortie d’argent",x:["Car c’est une charge qui sort réellement de la caisse","Car elle augmente le chiffre d’affaires","Car elle remplace l’impôt sur les bénéfices"],e:"Dans la cascade on la retire du résultat ; pour la CAF on la réajoute, car aucun argent n’est sorti."},
+{q:"1 000 pièces produites en 50 heures de travail. Quelle est la productivité ?",a:"20 pièces par heure",x:["50 pièces par heure","5 pièces par heure","200 pièces par heure"],e:"1 000 ÷ 50 = 20 pièces par heure"}
+];
+var NAMES=["Cascade","Notions et définitions","Les formules","Cas pratiques"];
+var $=function(i){return document.getElementById(i)};
+var stage,done,sel,score,errs,t0,tmr,pool,QL,qi,OP,lock,QP,QM,over,LIM=420;
+function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+function show(id){["home","game","end"].forEach(function(s){$(s).classList.toggle("hide",s!==id)})}
+function fmt(s){var m=Math.floor(s/60),r=s%60;return m+":"+(r<10?"0":"")+r}
+function tick(){
+ if(over)return;
+ var r=LIM-Math.floor((Date.now()-t0)/1000);
+ if(r<=0){$("tm").textContent="⏱ 0:00";finish(true);return}
+ $("tm").textContent="⏱ "+fmt(r);$("tm").style.color=r<=60?"var(--ko)":"";
+}
+function upd(){$("sc").textContent="⭐ "+score;tick()}
+function start(){over=0;score=0;errs=0;t0=Date.now();clearInterval(tmr);tmr=setInterval(tick,1000);goStage(0)}
+function goStage(k){
+ stage=k;$("next").classList.add("hide");show("game");$("chips").innerHTML="";
+ $("rd").textContent="Manche "+(k+1)+"/4 · "+NAMES[k];
+ if(k===0){done=S.map(function(){return 0});sel=-1;pool=shuffle(S.map(function(s,i){return i}));draw()}
+ else if(k===1)runQuiz(S.map(function(s){return{q:"Quelle notion correspond à cette définition ?<br><i>"+s.d+"</i>",a:s.n,x:shuffle(S.filter(function(t){return t!==s}).map(function(t){return t.n})).slice(0,3)}}),20,5);
+ else if(k===2)runQuiz(S.map(function(s){return{q:"Quelle est la formule de : "+s.n+" ?",a:s.f,x:s.x,e:s.e}}),40,10);
+ else runQuiz(M4,30,10);
+ window.scrollTo(0,0);
+}
+function draw(){
+ upd();
+ $("chips").innerHTML=pool.filter(function(i){return !done[i]}).map(function(i){return '<button class="chip'+(sel===i?' sel':'')+'" data-i="'+i+'">'+S[i].n+'</button>'}).join("");
+ $("info").textContent=sel>=0?S[sel].d:"Choisis une carte, puis touche son étape.";
+ var h="";
+ S.forEach(function(s,i){
+  if(i)h+='<div class="arrow">⬇</div>';
+  if(done[i])h+='<div class="step f"><b class="n">Étape '+(i+1)+'</b><h3>'+s.n+'</h3><p>'+s.f+'</p><p class="ex">'+s.e+'</p></div>';
+  else h+='<div class="step" data-s="'+i+'"><b class="n">Étape '+(i+1)+'</b><p>'+s.c+'</p></div>';
+ });
+ $("steps").innerHTML=h;
+}
+function place(i){
+ if(sel<0){$("info").textContent="👆 Choisis d’abord une carte en haut.";return}
+ if(sel===i){done[i]=1;score+=20;sel=-1;draw();if(done.every(Boolean))endStage(0)}
+ else{errs++;score=Math.max(0,score-5);upd();var el=document.querySelector('.step[data-s="'+i+'"]');el.classList.remove("shake");void el.offsetWidth;el.classList.add("shake")}
+}
+function runQuiz(list,p,l){QL=shuffle(list.slice());qi=0;QP=p;QM=l;drawQ()}
+function drawQ(){
+ var s=QL[qi];OP=shuffle([s.a].concat(s.x));lock=0;upd();
+ $("info").textContent="Question "+(qi+1)+"/"+QL.length;
+ $("steps").innerHTML='<div class="box"><h3>'+s.q+'</h3></div>'+OP.map(function(t,k){return '<button class="opt" data-k="'+k+'">'+t+'</button>'}).join("");
+}
+function endStage(quiz){
+ if(quiz){$("steps").innerHTML='<div class="box"><h3>✔ Manche terminée !</h3></div>';$("info").textContent=""}
+ var b=$("next");b.textContent=stage<3?"Manche "+(stage+2)+" : "+NAMES[stage+1]+" ➜":"Voir mon score 🏁";
+ b.classList.remove("hide");b.scrollIntoView({behavior:"smooth",block:"center"});
+}
+function finish(up){
+ clearInterval(tmr);over=1;
+ var el=Math.min(LIM,Math.floor((Date.now()-t0)/1000)),bonus=0;
+ if(!up){bonus=Math.floor((LIM-el)/5);score+=bonus}
+ $("et").textContent=up?"⏰ Temps écoulé !":"🎉 Bravo, tu maîtrises la cascade !";
+ $("es").textContent=score+" pts";
+ $("em").textContent=errs+" erreur"+(errs>1?"s":"")+" · "+fmt(el)+(up?" · manche "+(stage+1)+"/4 atteinte":" · bonus temps : +"+bonus);
+ show("end");window.scrollTo(0,0);
+}
+$("go").onclick=start;$("again").onclick=start;
+$("next").onclick=function(){if(stage<3)goStage(stage+1);else finish()};
+$("chips").addEventListener("click",function(e){var c=e.target.closest(".chip");if(c){sel=(+c.dataset.i===sel)?-1:+c.dataset.i;draw()}});
+$("steps").addEventListener("click",function(e){
+ var b=e.target.closest(".opt");
+ if(b){
+  if(lock||b.classList.contains("bad"))return;
+  var s=QL[qi];
+  if(OP[+b.dataset.k]===s.a){
+   lock=1;score+=QP;b.classList.add("good");upd();
+   if(s.e)$("info").textContent="✔ "+s.e;
+   setTimeout(function(){if(over)return;qi++;if(qi<QL.length)drawQ();else endStage(1)},s.e?1500:500);
+  }else{errs++;score=Math.max(0,score-QM);b.classList.add("bad");upd()}
+  return;
+ }
+ var st=e.target.closest(".step");
+ if(st&&st.dataset.s!==undefined&&stage===0)place(+st.dataset.s);
+});
+</script>
+</body>
+</html>
